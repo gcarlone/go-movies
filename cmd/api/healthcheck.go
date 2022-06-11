@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
@@ -14,19 +13,9 @@ func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Reques
 		"version":     version,
 	}
 
-	js, err := json.Marshal(data)
+	err := app.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
 		app.logger.Print(err)
 		http.Error(w, "The server encountered a problem and could not process your request", http.StatusInternalServerError)
-		return
 	}
-	js = append(js, '\n')
-
-	// Set the "Content-Type: application/json" header on the response. If you forget to
-	// this, Go will default to sending a "Content-Type: text/plain; charset=utf-8"
-	// header instead.
-	w.Header().Set("Content-Type", "application/json")
-
-	// Write the JSON as the HTTP response body.
-	w.Write(js)
 }
